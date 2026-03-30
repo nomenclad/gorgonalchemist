@@ -33,7 +33,7 @@ export function Header() {
             Gorgon Ramsay
           </h1>
           <span className="text-xs text-text-muted">
-            A Culinary Guide to Alharth
+            A Crafting Companion for Project Gorgon
           </span>
         </div>
 
