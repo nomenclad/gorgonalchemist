@@ -30,15 +30,45 @@ export const EXCLUDED_SKILLS = new Set([
 ]);
 
 /**
- * Legacy FOOD_SKILLS set — kept as an alias for backward compatibility.
- * Now returns true for any skill NOT in EXCLUDED_SKILLS.
- * @deprecated Use isCraftingSkill() instead for dynamic checking.
+ * A Set subclass whose `.has()` accepts any skill not in EXCLUDED_SKILLS.
+ * This lets the app show all crafting skills from CDN data without needing
+ * to enumerate every skill name upfront.
  */
-export const FOOD_SKILLS = {
-  has(skill: string): boolean {
+class AllCraftingSkills extends Set<string> {
+  override has(skill: string): boolean {
     return !EXCLUDED_SKILLS.has(skill);
-  },
-};
+  }
+}
+
+/**
+ * All crafting skills in Project Gorgon. The `.has()` method returns true for
+ * any skill not in EXCLUDED_SKILLS, so new CDN skills are accepted automatically.
+ * The Set contents are used for iteration/size when needed.
+ */
+export const FOOD_SKILLS: Set<string> = new AllCraftingSkills([
+  "Cooking",
+  "Cheesemaking",
+  "Gourmand",
+  "Gardening",
+  "Fishing",
+  "Angling",
+  "Butchering",
+  "Mycology",
+  "SushiPreparation",
+  "IceConjuration",
+  "Toolcrafting",
+  "Carpentry",
+  "Leatherworking",
+  "Tailoring",
+  "Dyemaking",
+  "Fletching",
+  "Alchemy",
+  "Tanning",
+  "Skinning",
+  "BattleChemistry",
+  "Sigil_Scripting",
+  "Lore",
+]);
 
 /** Check if a skill is a valid crafting skill (not excluded) */
 export function isCraftingSkill(skill: string): boolean {
