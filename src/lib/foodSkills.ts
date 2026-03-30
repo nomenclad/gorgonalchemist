@@ -1,38 +1,49 @@
 /**
- * Food skill definitions for Project Gorgon.
+ * Crafting skill definitions for Project Gorgon.
  *
- * This module defines which game skills are food-related, which are craftable
- * (vs. gathering), and how skills are grouped in the UI sidebar.
+ * This module defines which game skills are crafting-related, which are purely
+ * gathering, and how skills are grouped in the UI sidebar.
  *
  * The app uses these sets to:
- *  - Filter recipes on the Recipe Tracker and Gold Efficiency pages (FOOD_SKILLS)
+ *  - Filter recipes on the Recipe Tracker and Gold Efficiency pages
  *  - Decide which intermediate crafting steps to auto-resolve (CRAFT_SKILLS)
  *  - Merge Fishing + Angling under a single sidebar entry (MERGED_FISHING)
+ *  - Exclude non-craftable combat skills (EXCLUDED_SKILLS)
  *
  * How to change:
- *  - When a new food-related skill is added to Project Gorgon, add its InternalName
- *    (CamelCase, as it appears in the CDN data) to FOOD_SKILLS.
- *  - If the new skill is a crafting skill (not gathering), also add it to CRAFT_SKILLS.
+ *  - When a new skill is added to Project Gorgon, it will automatically appear
+ *    in the sidebar as long as it has recipes in the CDN data.
+ *  - If a skill should be excluded (e.g. combat skills with transmutation recipes),
+ *    add its InternalName to EXCLUDED_SKILLS.
  *  - Gathering skills (Butchering, Fishing, Angling) are intentionally excluded from
  *    CRAFT_SKILLS because their outputs are raw materials, not intermediate crafts.
  */
 
 /**
- * Skills considered food-related in Project Gorgon.
- * Used to filter the Recipe Tracker and Gold Efficiency pages.
+ * Skills excluded from the crafting UI — combat/magic skills that have recipes
+ * in the CDN data but aren't meaningfully trackable through crafting alone.
  */
-export const FOOD_SKILLS = new Set([
-  "Cooking",
-  "Cheesemaking",
-  "Gourmand",
-  "Gardening",
-  "Fishing",
-  "Angling",
-  "Butchering",
-  "Mycology",
-  "SushiPreparation",
-  "IceConjuration",
+export const EXCLUDED_SKILLS = new Set([
+  "FireMagic",
+  "IceMagic",
+  "WeatherWitching",
 ]);
+
+/**
+ * Legacy FOOD_SKILLS set — kept as an alias for backward compatibility.
+ * Now returns true for any skill NOT in EXCLUDED_SKILLS.
+ * @deprecated Use isCraftingSkill() instead for dynamic checking.
+ */
+export const FOOD_SKILLS = {
+  has(skill: string): boolean {
+    return !EXCLUDED_SKILLS.has(skill);
+  },
+};
+
+/** Check if a skill is a valid crafting skill (not excluded) */
+export function isCraftingSkill(skill: string): boolean {
+  return !EXCLUDED_SKILLS.has(skill);
+}
 
 /** Split a CamelCase skill ID into a human-readable label, e.g. "SushiPreparation" → "Sushi Preparation" */
 export function formatSkillName(id: string): string {

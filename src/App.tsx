@@ -23,6 +23,7 @@ import { GourmandTracker } from "./components/gourmand/GourmandTracker";
 import { CraftingCalculator } from "./components/crafting/CraftingCalculator";
 import { SettingsPage } from "./components/import/SettingsPage";
 import { CookingPlannerPage } from "./components/planner/CookingPlanner";
+import { SkillSidebar } from "./components/layout/SkillSidebar";
 import { useNavStore } from "./stores/navStore";
 import type { Tab } from "./components/layout/TabBar";
 
@@ -90,6 +91,9 @@ function App() {
       />
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* Skill sidebar */}
+        <SkillSidebar />
+
         {/* Tab content */}
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
           {/* Full-height tabs */}

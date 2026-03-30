@@ -385,8 +385,8 @@ export function CraftingCalculator() {
     return () => document.removeEventListener("pointerdown", close);
   }, [ctxMenu]);
 
-  // Food recipes list
-  const foodRecipes = useMemo(
+  // All craftable recipes (excluding combat skills)
+  const craftableRecipes = useMemo(
     () =>
       recipes
         .filter((r) => FOOD_SKILLS.has(r.Skill))
@@ -395,7 +395,7 @@ export function CraftingCalculator() {
   );
 
   const sidebarList = useMemo(() => {
-    let list = foodRecipes;
+    let list = craftableRecipes;
     if (selectedSkill) list = list.filter((r) => r.Skill === selectedSkill);
     const term = search.trim().toLowerCase();
     if (!term) return list;
@@ -404,12 +404,12 @@ export function CraftingCalculator() {
         r.Name.toLowerCase().includes(term) ||
         r.Skill.toLowerCase().includes(term)
     );
-  }, [foodRecipes, search, selectedSkill]);
+  }, [craftableRecipes, search, selectedSkill]);
 
   // Auto-select when navigated from context menu elsewhere
   useEffect(() => {
-    if (!pendingCraftName || foodRecipes.length === 0) return;
-    const match = foodRecipes.find(
+    if (!pendingCraftName || craftableRecipes.length === 0) return;
+    const match = craftableRecipes.find(
       (r) => r.Name.toLowerCase() === pendingCraftName.toLowerCase()
     );
     if (match) {
@@ -419,7 +419,7 @@ export function CraftingCalculator() {
       setZoom(1);
     }
     clearPendingCraft();
-  }, [pendingCraftName, foodRecipes, clearPendingCraft]);
+  }, [pendingCraftName, craftableRecipes, clearPendingCraft]);
 
   // Reset view when recipe changes
   useEffect(() => {

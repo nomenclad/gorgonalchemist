@@ -1,13 +1,13 @@
 /**
- * Sidebar for filtering recipes/foods by crafting skill. Lists all food-related
- * skills with recipe counts and character levels. Merges Fishing + Angling into
- * a single entry. Collapsible with a drag-to-resize handle.
+ * Sidebar for filtering recipes/items by crafting skill. Lists all skills that
+ * have recipes in the CDN data, with recipe counts and character levels. Merges
+ * Fishing + Angling into a single entry. Collapsible with a drag-to-resize handle.
  */
 import { useMemo, useState, useCallback } from "react";
 import { useNavStore } from "../../stores/navStore";
 import { useGameDataStore } from "../../stores/gameDataStore";
 import { useCharacterStore } from "../../stores/characterStore";
-import { FOOD_SKILLS, MERGED_FISHING, formatSkillName } from "../../lib/foodSkills";
+import { isCraftingSkill, MERGED_FISHING, formatSkillName } from "../../lib/foodSkills";
 
 const SIDEBAR_MIN = 140;
 const SIDEBAR_MAX = 360;
@@ -40,11 +40,12 @@ export function SkillSidebar() {
   const loaded = useGameDataStore((s) => s.loaded);
   const character = useCharacterStore((s) => s.character);
 
-  // Combine Fishing + Angling into a single "Fishing" sidebar entry
+  // Build skill list dynamically from all recipes (excluding combat skills),
+  // merging Fishing + Angling into a single "Fishing" entry
   const skillList = useMemo(() => {
     const s = new Set(
       recipes
-        .filter((r) => FOOD_SKILLS.has(r.Skill))
+        .filter((r) => isCraftingSkill(r.Skill))
         .map((r) => (MERGED_FISHING.has(r.Skill) ? "Fishing" : r.Skill))
     );
     return Array.from(s).sort();
@@ -52,14 +53,14 @@ export function SkillSidebar() {
 
   const completions = character?.RecipeCompletions ?? {};
 
-  // "All" counts: all food-skill recipes
-  const allFoodRecipes = useMemo(
-    () => recipes.filter((r) => FOOD_SKILLS.has(r.Skill)),
+  // "All" counts: all crafting-skill recipes
+  const allCraftingRecipes = useMemo(
+    () => recipes.filter((r) => isCraftingSkill(r.Skill)),
     [recipes]
   );
   const allKnown = useMemo(
-    () => allFoodRecipes.filter((r) => r.InternalName in completions).length,
-    [allFoodRecipes, completions]
+    () => allCraftingRecipes.filter((r) => r.InternalName in completions).length,
+    [allCraftingRecipes, completions]
   );
 
   return (
@@ -73,7 +74,7 @@ export function SkillSidebar() {
         <>
           <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
             <span className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
-              Skills
+              Crafting Skills
             </span>
             <button
               onClick={toggleSkillSidebar}
@@ -98,11 +99,11 @@ export function SkillSidebar() {
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="truncate">All</span>
+                  <span className="truncate">All Skills</span>
                 </div>
                 {character && (
                   <div className="text-xs text-text-muted mt-0.5">
-                    {allKnown}/{allFoodRecipes.length} recipes
+                    {allKnown}/{allCraftingRecipes.length} recipes
                   </div>
                 )}
               </button>
@@ -131,7 +132,7 @@ export function SkillSidebar() {
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate">{name === "Fishing" ? "Fishing / Angling" : formatSkillName(name)}</span>
                       {level !== undefined && (
-                        <span className="text-xs text-text-muted shrink-0">{level}</span>
+                        <span className="text-xs text-text-muted shrink-0">Lv {level}</span>
                       )}
                     </div>
                     <div className="text-xs text-text-muted mt-0.5">
@@ -152,7 +153,7 @@ export function SkillSidebar() {
       ) : (
         <button
           onClick={toggleSkillSidebar}
-          title="Expand skills"
+          title="Expand crafting skills"
           className="flex-1 flex items-start justify-center pt-3 text-text-muted hover:text-text-primary transition-colors"
         >
           ▶

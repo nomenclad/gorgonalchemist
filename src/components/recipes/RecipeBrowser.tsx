@@ -302,7 +302,7 @@ export function RecipeBrowser() {
       <div>
         <h2 className="text-xl font-semibold">Recipes</h2>
         <p className="text-sm text-text-muted mt-1">
-          Browse and queue food recipes — star what you want to cook and plan your crafting session.
+          Browse and queue recipes — star what you want to craft and plan your session.
         </p>
       </div>
 
